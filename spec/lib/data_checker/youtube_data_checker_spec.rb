@@ -64,7 +64,7 @@ describe 'youtube data integrity checker' do
 
   it 'shows no discrepancies between two files with a channel ownership concern and an optional UC in yt id' do
     arr = get_csv_arr 'file4_test.csv'
-    arr2 = get_csv_arr 'file333_test.csv'
+    arr2 = get_csv_arr 'file3_test.csv'
     pc = parsed_csv arr
     pc2 = parsed_csv arr2
     

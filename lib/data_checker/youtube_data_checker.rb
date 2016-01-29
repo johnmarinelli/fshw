@@ -18,12 +18,11 @@ module YoutubeDataChecker
     attr_writer :headers, :data
   end
 
+  # finds discrepancies between two ParsedCsvs.
   class DiscrepancyFinder
     attr_reader :discrepancies
     attr_accessor :concern
 
-    # TODO: could put headers into local object for genericity
-    # then a[@headers[:email]] or something like that
     def initialize(concern = :none)
       @concern = concern 
     end
@@ -47,13 +46,12 @@ module YoutubeDataChecker
     end
 
     def subs_count_difference?(a, b)
-      Integer(a[:subscriber_count]) != Integer(b[:subscriber_count])
+      Integer(a[:subscriber_count].gsub ',', '') != Integer(b[:subscriber_count].gsub ',', '')
     end
 
     def channel_owner_difference?(a, b)
       # returns a youtube id given various formats
-      # TODO: take care of optional UC
-      get_id = lambda { |s| s.split('/').last }
+      get_id = lambda { |s| s = s.split('/').last; if s[0..1] == 'UC'then s[2..s.length] else s end; }
       get_id.call(a[:youtube_channel]) != get_id.call(b[:youtube_channel])
     end
 
@@ -77,7 +75,7 @@ module YoutubeDataChecker
       if same?(a, b)
         nil
       else
-        row_info = " at row #{idx + 1}"
+        row_info = "at row #{idx + 1}\n"
         if @concern == :subscriber_count
           disc_info = "#{a[:subscriber_count]} != #{b[:subscriber_count]} #{row_info}"
         elsif @concern == :channel_ownership
